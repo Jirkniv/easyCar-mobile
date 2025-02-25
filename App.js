@@ -1,10 +1,10 @@
-import  Home from './src/screens/HomePage/Home';
-import {Text} from 'react-native';
+import Home from "./scr/screens/HomePage/Home.jsx";
 
 export default function App() {
   return (
     <>
-      <Home />
+    
+  <Home />
     </>
   );
 }
