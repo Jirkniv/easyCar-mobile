@@ -1,11 +1,8 @@
-import Home from "./scr/screens/HomePage/Home.jsx";
-
+import Routes from './scr/routes.js';
 export default function App() {
-  return (
-    <>
-    
-  <Home />
+  return <>
+    <Routes />
     </>
-  );
+  
 }
 
