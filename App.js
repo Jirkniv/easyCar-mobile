@@ -1,4 +1,4 @@
-import Routes from './scr/routes.js';
+import Routes from './src/routes';
 export default function App() {
   return <>
     <Routes />
