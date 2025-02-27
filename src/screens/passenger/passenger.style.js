@@ -27,6 +27,11 @@ export const styles = {
         borderWidth: 1,
         borderColor: "#cccccc",
         padding: 10
+    },
+    loading: {
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1
     }
 };
 
