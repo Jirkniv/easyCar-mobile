@@ -3,6 +3,10 @@ export const styles = {
         flex: 1,
         backgroundColor: "#fff"
     },
+    map:{
+        flex:1,
+        width:"100%"
+    },
     name: {
         fontSize: 17,
         fontWeight: "bold"
