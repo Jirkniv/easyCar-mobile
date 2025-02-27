@@ -14,9 +14,42 @@ function Passenger(props) {
     const [pickupAdress, setPickupAdress] = useState('');
     const [dropOffAdress, setDropOffAdress] = useState('');
     const [title, setTitle] = useState('');
+    const [status, setStatus] = useState('');
+    const [rideId, setRideId] = useState(0);
+    const [driverName, setDriverName] = useState('');
 
     async function RequestRideFromUser(){
-        const response = {}
+      //  const response = {}
+          const response = {
+            /*    ride_id: 3,
+                passenger_user_id: 3,
+                passenger_name: "Marcio Antunes",
+                passenger_phone: "(11) 99999-9999",
+                pickup_address: "Rua do Gasometro, 55 - Bras",
+                pickup_date: "2025-02-17",
+                dropoff_address: "Praça da Sé",
+                status: "P",
+                driver_user_id: null,
+                driver_name: null,
+                pickup_latitude: -23.561747,
+                pickup_longitude: -46.656244
+               */
+                ride_id: 1,
+                passenger_user_id: 1,
+                passenger_name: "Heber Stein Mazutti",
+                passenger_phone: "(11) 99999-9999",
+                pickup_address: "Praça Charles Miller - Pacaembu",
+                pickup_date: "2025-02-19",
+                pickup_latitude: "-23.543132",
+                pickup_longitude: "-46.665389",
+                dropoff_address: "Shopping Center Norte",
+                status: "A",
+                driver_user_id: 2,
+                driver_name: "João Martins",
+                driver_phone: "(11) 5555-5555"
+                
+          }  
+     
         return response;
     }
 
@@ -60,11 +93,20 @@ function Passenger(props) {
           setMyLocation(location);
 
           RequestAdressName(location.latitude , location.longitude);
-        }
-        
-    }  else {
+        } else {
         Alert.alert("Não foi possivle obter sua localização");""
-    }
+        }
+    }  else {
+        setTitle(response.status == "P" ? 'Aguardando uma carona' : 'Carona encontrada');  
+        setMyLocation({
+            latitude: Number(response.pickup_latitude),
+            longitude: Number(response.pickup_longitude)
+        });
+        setPickupAdress(response.pickup_address);
+        setDropOffAdress(response.dropoff_address);
+        setStatus(response.status);
+        setRideId(response.ride_id);
+        setDriverName(response.driver_name + " - " + response.driver_phone);    }
   }
 
     async function askForRide() {
@@ -79,7 +121,25 @@ function Passenger(props) {
           props.navigation.goBack();
     }
 
-  
+    async function cancelRide(){
+        const json = {
+            passenger_user_id: userId,
+            ride_id: rideId
+        }
+        console.log("Cancelar Carona", json);
+        props.navigation.goBack();
+ 
+    }
+    
+    async function finishRide(){
+        const json = {
+            passenger_user_id: userId,
+            ride_id: rideId
+        }
+        console.log("Finalizar Carona", json);
+        props.navigation.goBack();
+
+    }
     useEffect(() => {
         LoadScreen();
     },[])
@@ -111,20 +171,28 @@ function Passenger(props) {
 
             <View style={styles.footerFields}>
                 <Text>Origem</Text>
-                <TextInput style={styles.input} value={pickupAdress} onChangeText={(text) => setPickupAdress(text)} />
+                <TextInput style={styles.input} value={pickupAdress} onChangeText={(text) => setPickupAdress(text)} editable={status=="" ? true : false} />
             </View>
 
             <View style={styles.footerFields}>
                 <Text>Destino</Text>
-                <TextInput style={styles.input} value={dropOffAdress} onChangeText={(text) => setDropOffAdress(text)} />
+                <TextInput style={styles.input} value={dropOffAdress} onChangeText={(text) => setDropOffAdress(text)} 
+                editable={status=="" ? true : false} />
             </View>
-{/* 
-            <View style={styles.footerFields}>
+
+            {status == "A" &&
+             <View style={styles.footerFields}>
                 <Text>Motorista</Text>
-                <TextInput style={styles.input} />
-            </View> */}
+                <TextInput style={styles.input} value={driverName} editable={false}/>
+            </View> }
+
+           
         </View>
-        <MyButton text="CONFIRMAR" theme="default" onClick={askForRide} />
+        {status == "" && <MyButton text="CONFIRMAR" theme="default" onClick={askForRide} /> }
+
+        {status == "P" && <MyButton text="CANCELAR" theme="red" onClick={cancelRide} /> }
+
+        {status == "A" && <MyButton text="FINALIZAR CARONA" theme="red" onClick={finishRide} />}
 
          </>
           : <View style={styles.loading}>
