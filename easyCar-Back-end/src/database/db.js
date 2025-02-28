@@ -15,7 +15,7 @@ db.connect()
   .catch(err => console.error('❌ Erro ao conectar ao PostgreSQL:', err));
 
 // Função de execução de queries
-function execute(command, params = []) {
+ function execute(command, params = []) {
   return db.query(command, params)
     .then(result => result.rows)
     .catch(err => {

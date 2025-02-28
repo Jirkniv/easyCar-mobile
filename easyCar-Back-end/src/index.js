@@ -12,6 +12,7 @@ app.use(express.json());
 const port = 9999;
 
 app.get("/rides", controllerRide.List );
+app.post("/rides", controllerRide.Insert)
 
 app.listen(port, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${port}`);
