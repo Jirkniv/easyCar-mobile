@@ -86,11 +86,34 @@ join users on (users.user_id = rides.passenger_user_id)
 where rides.pickup_date = CURRENT_DATE
 and  rides.driver_user_id = $1
 
-`;
+UNION
+
+select rides.* , users."name" as passenger_name, users.phone as passenger_phone
+from rides
+join users on (users.user_id = rides.passenger_user_id)
+where rides.pickup_date = CURRENT_DATE
+and  rides.driver_user_id is null `;
 
 
     const rides = await execute(sql, [driver_user_id]);
     return rides;
 }
 
-export default { List, Insert , Delete , Finish , ListForDriver};
+async function Accept(ride_id, driver_user_id) {
+
+    let sql = ` UPDATE rides SET status = 'A', driver_user_id = $1 WHERE ride_id = $2 `;
+
+    await execute(sql, [driver_user_id, ride_id]);
+
+    return {ride_id};
+}
+
+async function Cancel(ride_id) {
+
+    let sql = ` UPDATE rides SET status = 'P', driver_user_id = null WHERE ride_id = $1 `;
+
+    await execute(sql, [ride_id]);
+
+    return {ride_id};
+}
+export default { List, Insert , Delete , Finish , ListForDriver, Accept, Cancel};

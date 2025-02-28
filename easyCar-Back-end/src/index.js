@@ -16,6 +16,9 @@ app.post("/rides", controllerRide.Insert);
 app.delete("/rides/:ride_id", controllerRide.Delete);
 app.put("/rides/:ride_id/finish", controllerRide.Finish);
 app.get("/rides/drivers/:driver_user_id", controllerRide.ListForDriver);
+app.get("/rides/:ride_id", controllerRide.ListDetail);
+app.put("/rides/:ride_id/accept", controllerRide.Accept);
+app.put("/rides/:ride_id/cancel", controllerRide.Cancel);
 
 
 app.listen(port, () => {
