@@ -40,4 +40,54 @@ async function Insert(req, res) {
 
     
 }
-export default {List , Insert}
+
+async function Delete(req, res) {
+    try {
+
+        const ride_id = req.params.ride_id;
+
+
+
+        const ride = await serviceRide.Delete(ride_id); 
+        
+        res.status(200).json(ride);  
+    } catch (error) {
+        res.status(500).json(error); 
+    }
+
+    
+}
+
+async function Finish(req, res) {
+    try {
+
+        const ride_id = req.params.ride_id;
+        const passenger_user_id = req.body.passenger_user_id;
+
+
+        const ride = await serviceRide.Finish(ride_id , passenger_user_id); 
+        
+        res.status(200).json(ride);  
+    } catch (error) {
+        res.status(500).json(error); 
+    }
+
+    
+}
+async function ListForDriver(req, res) {
+    try {
+
+        const driver_user_id = req.params.driver_user_id;
+
+
+        const rides = await serviceRide.ListForDriver(driver_user_id); 
+        
+        res.status(200).json(rides);  
+    } catch (error) {
+        res.status(500).json(error); 
+    }
+
+    
+}
+
+export default {List , Insert, Delete, Finish , ListForDriver};

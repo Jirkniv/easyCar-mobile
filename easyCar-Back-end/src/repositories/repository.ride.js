@@ -4,7 +4,14 @@ import { execute } from "../database/db.js";
 async function List(passenger_user_id, pickup_date, ride_id, driver_user_id, status) {
 
     let filtro = [];
-    let sql = `SELECT * FROM rides WHERE ride_id > 0`;
+    let sql = `select rides.* , users."name" as passenger_name, users.phone as passenger_phone
+, d.name as driver_name, d.phone as driver_phone
+from rides
+join users on (users.user_id = rides.passenger_user_id)
+left join users d on (d.user_id = rides.driver_user_id)
+where rides.ride_id > 0
+
+`;
 
     if (passenger_user_id) {
         filtro.push(passenger_user_id);
@@ -31,8 +38,6 @@ async function List(passenger_user_id, pickup_date, ride_id, driver_user_id, sta
         sql += ` AND status = $${filtro.length}`;
     }
 
-    console.log("🟢 SQL:", sql);
-    console.log("🟡 Filtros:", filtro);
 
     const rides = await execute(sql, filtro);
     return rides;
@@ -54,4 +59,38 @@ async function Insert(passenger_user_id, pickup_address, pickup_latitude, pickup
     return ride[0];
 }
 
-export default { List, Insert };
+async function Delete(ride_id) {
+
+    let sql = ` DELETE FROM RIDES WHERE ride_id = $1 `;
+
+    await execute(sql, [ride_id]);
+
+    return {ride_id};
+}
+
+async function Finish(ride_id, passenger_user_id) {
+
+    let sql = ` UPDATE rides SET status = 'F' WHERE ride_id = $1 AND passenger_user_id = $2 `;
+
+    await execute(sql, [ride_id, passenger_user_id]);
+
+    return {ride_id};
+}
+
+
+async function ListForDriver(driver_user_id) {
+
+    let sql = `select rides.* , users."name" as passenger_name, users.phone as passenger_phone
+from rides
+join users on (users.user_id = rides.passenger_user_id)
+where rides.pickup_date = CURRENT_DATE
+and  rides.driver_user_id = $1
+
+`;
+
+
+    const rides = await execute(sql, [driver_user_id]);
+    return rides;
+}
+
+export default { List, Insert , Delete , Finish , ListForDriver};
