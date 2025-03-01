@@ -51,7 +51,6 @@ async function Insert(passenger_user_id, pickup_address, pickup_latitude, pickup
 
     let dt = new Date().toLocaleDateString("pr-BR", {timezone: "America/Sao_Paulo"})
     dt = dt.substring(0, 10);
-    console.log(dt);
 
     let sql = ` INSERT INTO RIDES (passenger_user_id, pickup_address, pickup_latitude, pickup_longitude, dropoff_address, pickup_date, status) VALUES ($1, $2, $3, $4, $5, $6, 'P') returning ride_id`;
 

@@ -8,7 +8,7 @@ async function List(passenger_user_id, pickup_date, ride_id, driver_user_id, sta
 
 async function Insert(passenger_user_id, pickup_address, pickup_latitude, pickup_longitude, dropoff_address) {
 
-    const dt = new Date().toLocaleDateString("sv-SE", {timezone: "America/Sao_Paulo"}).substring(0, 10);
+    const dt = new Date().toISOString("pt-BR", { timeZone: "America/Sao_Paulo" }).substring(0, 10);
     const searchRides = await List(passenger_user_id, dt, null, null, null,'F' );
 
     if(searchRides.length > 0)
@@ -39,13 +39,13 @@ async function ListForDriver(driver_user_id) {
 
 async function Accept(ride_id, driver_user_id) {
 
-    // Validacao: O motorista só pode aceitar uma carona por vez
+
     const dt = new Date().toISOString("pt-BR", { timeZone: "America/Sao_Paulo" }).substring(0, 10);
     const searchRides = await List(null, dt, null, driver_user_id, "A", null);
 
     if (searchRides.length > 0)
-        throw new Error( "Você já possui uma corrida aceita no dia de hoje para: " + searchRides[0].passenger_name);
-    //----------------------------------
+        throw "Você já possui uma corrida aceita no dia de hoje para: " + searchRides[0].passenger_name;
+  
 
     const ride = await repositoryRide.Accept(ride_id, driver_user_id);
 

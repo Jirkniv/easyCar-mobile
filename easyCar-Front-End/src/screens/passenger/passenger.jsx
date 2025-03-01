@@ -5,11 +5,11 @@ import { styles } from "./passenger.style.js";
 import { useState, useEffect } from "react";
 import icons from "../../constants/icons.js";
 import { requestForegroundPermissionsAsync , getCurrentPositionAsync, reverseGeocodeAsync } from "expo-location";
-
+import { api, handleError } from "../../constants/api.js";
 
 function Passenger(props) {
 
-    const userId = 1;
+    const userId = 8;
     const [myLocation, setMyLocation] = useState({});
     const [pickupAdress, setPickupAdress] = useState('');
     const [dropOffAdress, setDropOffAdress] = useState('');
@@ -19,38 +19,25 @@ function Passenger(props) {
     const [driverName, setDriverName] = useState('');
 
     async function RequestRideFromUser(){
-      //  const response = {}
-          const response = {
-            /*    ride_id: 3,
-                passenger_user_id: 3,
-                passenger_name: "Marcio Antunes",
-                passenger_phone: "(11) 99999-9999",
-                pickup_address: "Rua do Gasometro, 55 - Bras",
-                pickup_date: "2025-02-17",
-                dropoff_address: "Praça da Sé",
-                status: "P",
-                driver_user_id: null,
-                driver_name: null,
-                pickup_latitude: -23.561747,
-                pickup_longitude: -46.656244
-               */
-                ride_id: 1,
-                passenger_user_id: 1,
-                passenger_name: "Heber Stein Mazutti",
-                passenger_phone: "(11) 99999-9999",
-                pickup_address: "Praça Charles Miller - Pacaembu",
-                pickup_date: "2025-02-19",
-                pickup_latitude: "-23.543132",
-                pickup_longitude: "-46.665389",
-                dropoff_address: "Shopping Center Norte",
-                status: "A",
-                driver_user_id: 2,
-                driver_name: "João Martins",
-                driver_phone: "(11) 5555-5555"
-                
-          }  
-     
-        return response;
+        try {
+
+            const response = await api.get("/rides", {
+                params:{
+                    passenger_user_id: userId,
+                    pickup_date: new Date().toISOString("pt-BR", { timeZone: "America/Sao_Paulo" }).substring(0, 10),
+                    status_not: "F"
+                }
+            });
+
+            if (response.data[0]){
+                return response.data[0];
+            } else{
+                return {};
+            }
+        } catch (error) {
+            handleError(error);
+            props.navigation.goBack();
+        }  
     }
 
     async function RequestPermissionAndGetLocation(){
@@ -110,34 +97,58 @@ function Passenger(props) {
   }
 
     async function askForRide() {
-        const json = {
-            passenger_id: userId,
-            pickup_address: pickupAdress,
-            dropOffAdress: dropOffAdress,
-            pickup_latitude: myLocation.latitude,
-            pickup_longitude: myLocation.longitude
-        }
-        console.log("Eviar post para o servidor",json);
-          props.navigation.goBack();
+       
+        try {
+            const json = {
+                        passenger_user_id: userId,
+                        pickup_address: pickupAdress,
+                        dropOffAdress: dropOffAdress,
+                        pickup_latitude: myLocation.latitude,
+                        pickup_longitude: myLocation.longitude
+                    }
+            const response = await api.post("/rides", json);
+
+            if (response.data){
+                props.navigation.goBack();
+            } 
+        } catch (error) {
+            handleError(error);
+           
+        } 
     }
 
     async function cancelRide(){
-        const json = {
-            passenger_user_id: userId,
-            ride_id: rideId
-        }
-        console.log("Cancelar Carona", json);
-        props.navigation.goBack();
+      
+        try {
+           
+            const response = await api.delete("/rides/" + rideId);
+
+            if (response.data){
+                props.navigation.goBack();
+            } 
+        } catch (error) {
+            handleError(error);
+           
+        } 
  
     }
     
     async function finishRide(){
-        const json = {
+        
+        try {
+           const json = {
             passenger_user_id: userId,
             ride_id: rideId
         }
-        console.log("Finalizar Carona", json);
-        props.navigation.goBack();
+            const response = await api.put("/rides/" + rideId+ "/finish", json);
+
+            if (response.data){
+                props.navigation.goBack();
+            } 
+        } catch (error) {
+            handleError(error);
+           
+        } 
 
     }
     useEffect(() => {
@@ -189,6 +200,8 @@ function Passenger(props) {
            
         </View>
         {status == "" && <MyButton text="CONFIRMAR" theme="default" onClick={askForRide} /> }
+
+        {status == "F" && <MyButton text="CONFIRMAR" theme="default" onClick={askForRide} /> }
 
         {status == "P" && <MyButton text="CANCELAR" theme="red" onClick={cancelRide} /> }
 
