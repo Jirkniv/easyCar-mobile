@@ -1,7 +1,7 @@
 import { execute } from "../database/db.js";
 
 
-async function List(passenger_user_id, pickup_date, ride_id, driver_user_id, status) {
+async function List(passenger_user_id, pickup_date, ride_id, driver_user_id, status, not_status) {
 
     let filtro = [];
     let sql = `select rides.* , users."name" as passenger_name, users.phone as passenger_phone
@@ -37,7 +37,10 @@ where rides.ride_id > 0
         filtro.push(status);
         sql += ` AND status = $${filtro.length}`;
     }
-
+    if (not_status) {
+        filtro.push(not_status);
+        sql += ` AND status <> $${filtro.length}`;
+    }
 
     const rides = await execute(sql, filtro);
     return rides;
@@ -46,15 +49,18 @@ where rides.ride_id > 0
 
 async function Insert(passenger_user_id, pickup_address, pickup_latitude, pickup_longitude, dropoff_address) {
 
-    let filtro = [];
-    let sql = ` INSERT INTO RIDES (passenger_user_id, pickup_address, pickup_latitude, pickup_longitude, dropoff_address, pickup_date, status) VALUES ($1, $2, $3, $4, $5, CURRENT_DATE, 'P') returning ride_id`;
+    let dt = new Date().toLocaleDateString("pr-BR", {timezone: "America/Sao_Paulo"})
+    dt = dt.substring(0, 10);
+    console.log(dt);
+
+    let sql = ` INSERT INTO RIDES (passenger_user_id, pickup_address, pickup_latitude, pickup_longitude, dropoff_address, pickup_date, status) VALUES ($1, $2, $3, $4, $5, $6, 'P') returning ride_id`;
 
 
    
 
 
 
-    const ride = await execute(sql, [passenger_user_id, pickup_address, pickup_latitude, pickup_longitude, dropoff_address]);
+    const ride = await execute(sql, [passenger_user_id, pickup_address, pickup_latitude, pickup_longitude, dropoff_address, dt]);
 
     return ride[0];
 }

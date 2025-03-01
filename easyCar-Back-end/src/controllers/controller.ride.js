@@ -8,9 +8,9 @@ async function List(req, res) {
         const ride_id = req.query.ride_id;
         const driver_user_id = req.query.driver_user_id;
         const status = req.query.status;
-        
+        const not_status = req.query.not_status;
 
-        const rides = await serviceRide.List(passenger_user_id, pickup_date, ride_id, driver_user_id, status); 
+        const rides = await serviceRide.List(passenger_user_id, pickup_date, ride_id, driver_user_id, status, not_status); 
         
         res.status(200).json(rides);  
     } catch (error) {
@@ -96,7 +96,7 @@ async function ListDetail(req, res) {
         const ride_id = req.params.ride_id;
 
 
-        const rides = await serviceRide.List(null,null,ride_id,null,null); 
+        const rides = await serviceRide.List(null,null,ride_id,null,null,null); 
         
         res.status(200).json(rides[0]);  
     } catch (error) {
