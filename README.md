@@ -63,7 +63,7 @@ cd easyCar-Back-end
 npm install
 ```
 
-- Configure o banco de dados PostgreSQL no arquivo `db.js`.
+- Configure o banco de dados PostgreSQL, crie o banco de dados e as tabelas atraves dos scripts [aqui](https://mysterious-approval-fa2.notion.site/Banco-de-Dados-1aa1c89527f380be8778ed73681d9d4c?pvs=4). 
 - Inicie o servidor:
   ```sh
   node src/indes.js
